@@ -1,26 +1,29 @@
 #!/usr/bin/env bash
-# Exit immediately if a command fails
-set -e
+# Configure Nginx redirection /redirect_me -> YouTube
 
-# Update package list and install nginx
-apt-get update -y
-apt-get install -y nginx
+# Install nginx if not installed
+apt-get -y update
+apt-get -y install nginx
 
-# Create a default index page
-echo "Hello World!" > /var/www/html/index.html
+# Create nginx configuration
+cat > /etc/nginx/sites-available/default <<'EOF'
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
 
-# Path to nginx default site config
-NGINX_DEFAULT_CONF="/etc/nginx/sites-available/default"
+    root /var/www/html;
+    index index.html index.htm;
 
-# Check if the redirect already exists to avoid duplicates
-if ! grep -q "location /redirect_me" "$NGINX_DEFAULT_CONF"; then
-    # Safely insert the redirect inside the server block after server_name line
-    sed -i '/server_name _;/a \
-    \n    location /redirect_me {\n        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\n    }' "$NGINX_DEFAULT_CONF"
-fi
+    server_name _;
 
-# Test nginx configuration for syntax errors
+    location /redirect_me {
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+    }
+}
+EOF
+
+# Test nginx configuration
 nginx -t
 
-# Restart nginx to apply changes
-service nginx restart
+# Restart nginx
+systemctl restart nginx
