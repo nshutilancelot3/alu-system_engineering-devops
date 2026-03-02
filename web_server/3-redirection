@@ -24,6 +24,5 @@ EOF
 
 # Test nginx configuration
 nginx -t
-
 # Restart nginx
 systemctl restart nginx
