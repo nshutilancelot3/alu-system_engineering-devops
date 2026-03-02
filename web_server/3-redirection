@@ -1,22 +1,28 @@
 #!/usr/bin/env bash
-# Configure Nginx redirection
+# Configure Nginx redirection /redirect_me -> YouTube
 
+# Install nginx if not installed
 apt-get -y update
 apt-get -y install nginx
 
 # Create nginx configuration
-echo "server {
+cat > /etc/nginx/sites-available/default <<'EOF'
+server {
     listen 80 default_server;
     listen [::]:80 default_server;
 
+    root /var/www/html;
+    index index.html index.htm;
+
     server_name _;
 
-    location = /redirect_me {
+    location /redirect_me {
         return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
     }
-}" > /etc/nginx/sites-available/default
+}
+EOF
 
-# Test nginx config
+# Test nginx configuration
 nginx -t
 
 # Restart nginx
