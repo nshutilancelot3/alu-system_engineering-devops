@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
-# Update the package list to make sure we have the latest information
-apt-get update -y
+# Configure nginx redirection
 
-# Install nginx web server package without asking for confirmation
-apt-get install -y nginx
+apt-get -y update
+apt-get -y install nginx
 
-# Create a simple HTML page in the default web root with the text we want
-echo "Holberton School for the win!" > /var/www/html/index.html
+# Add redirect inside default server block
+sed -i '/server_name _;/a \
+    location = /redirect_me {\n\
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\n\
+    }\n' /etc/nginx/sites-available/default
 
-# Start the nginx service (without using systemctl)
-service nginx start
+# Test configuration
+nginx -t
+
+# Restart nginx
+systemctl restart nginx
