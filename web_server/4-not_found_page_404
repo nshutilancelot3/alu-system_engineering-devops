@@ -7,12 +7,24 @@ apt-get -y install nginx
 # Create custom 404 page
 echo "Ceci n'est pas une page" > /var/www/html/404.html
 
-# Configure nginx
-sed -i '/server_name _;/a \
-    error_page 404 /404.html;\n\
-    location = /404.html {\n\
-        internal;\n\
-    }\n' /etc/nginx/sites-available/default
+# Configure nginx default site
+cat > /etc/nginx/sites-available/default <<'EOF'
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html index.htm;
+
+    server_name _;
+
+    error_page 404 /404.html;
+
+    location = /404.html {
+        internal;
+    }
+}
+EOF
 
 # Test configuration
 nginx -t
