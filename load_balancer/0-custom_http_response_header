@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Configure Nginx with custom response header
 # shellcheck disable=SC2154
 
-apt-get update -y
-apt-get install -y nginx
+# Update & install nginx (use sudo inside script)
+sudo apt-get update -y
+sudo apt-get install -y nginx
 
-# Create custom header configuration
-echo 'add_header X-Served-By $hostname;' > /etc/nginx/conf.d/custom_header.conf
+# Add custom header to nginx config
+echo 'add_header X-Served-By $hostname;' | sudo tee /etc/nginx/conf.d/custom_header.conf
 
 # Restart nginx
-service nginx restart
+sudo service nginx restart
