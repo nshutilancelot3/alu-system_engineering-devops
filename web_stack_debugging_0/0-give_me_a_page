@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
-# Update package lists (if needed)
+
+# Update packages
 apt-get update
 
-# Install Apache2 (if not already installed)
+# Install Apache if missing
 apt-get install -y apache2
 
-# Create the page that will be served
+# Create the page
 echo "Hello Holberton" > /var/www/html/index.html
 
-# Start Apache in the foreground (keeps container alive)
+echo "apache2 is running"
+
+# Start Apache in foreground
 apache2ctl -D FOREGROUND
