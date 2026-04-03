@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
-# Fix Nginx to run as nginx user on port 8080
+# Configure Nginx to run as nginx user on port 8080
 
-# Change the listening port from 80 to 8080
-sed -i 's/listen 80/listen 8080/' /etc/nginx/sites-enabled/default
-sed -i 's/listen \[::\]:80/listen \[::\]:8080/' /etc/nginx/sites-enabled/default
+# Fix user - handle www-data (Ubuntu default)
+sed -i 's/user www-data/user nginx/g' /etc/nginx/nginx.conf
 
-# Set nginx to run as nginx user
-sed -i 's/^user .*/user nginx;/' /etc/nginx/nginx.conf
+# Change port to 8080
+sed -i 's/listen 80 default_server/listen 8080 default_server/g' /etc/nginx/sites-enabled/default
+sed -i 's/listen \[::\]:80 default_server/listen \[::\]:8080 default_server/g' /etc/nginx/sites-enabled/default
 
-# Fix permissions so nginx user can access required files
+# Fix permissions for nginx user
 chown -R nginx /var/log/nginx
 chown -R nginx /var/lib/nginx
 
-# Kill any running nginx and restart as nginx user
-pkill nginx
+# Restart nginx
+pkill nginx || true
 nginx
