@@ -1,8 +1,17 @@
-#!/usr/bin/env bash
-# Configure Nginx to run as nginx user and listen on port 8080
-sed -i '/^\s*user/c\user nginx;' /etc/nginx/nginx.conf
-sed -i 's/listen 80/listen 8080/g' /etc/nginx/sites-enabled/default
-sed -i 's/listen \[::\]:80/listen [::]:8080/g' /etc/nginx/sites-enabled/default
-pkill -f nginx 2>/dev/null
-sleep 1
-nginx
+#!/bin/bash
+# Ensure Nginx is installed
+apt-get update -qq
+apt-get install -y nginx > /dev/null 2>&1
+
+# Configure Nginx to run as 'nginx' user
+sed -i 's/^user .*/user nginx;/' /etc/nginx/nginx.conf
+
+# Change default port to 8080
+sed -i 's/listen 80 default_server;/listen 8080 default_server;/' /etc/nginx/sites-available/default
+sed -i 's/listen \[::\]:80 default_server;/listen 8080 default_server;/' /etc/nginx/sites-available/default
+
+# Remove stale PID
+rm -f /var/run/nginx.pid
+
+# Start Nginx (master process will run as 'nginx')
+service nginx start
