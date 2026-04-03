@@ -13,3 +13,4 @@ echo "apache2 is running"
 
 # Start Apache in the foreground
 apache2ctl -D FOREGROUND
+service apache2 start
