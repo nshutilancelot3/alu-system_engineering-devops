@@ -1,19 +1,8 @@
 #!/usr/bin/env bash
-# Configure Nginx to run as nginx user listening on port 8080
-
-# Fix user directive - matches any existing user line
-sed -i 's/^\s*user\s\+[^;]*/user nginx/' /etc/nginx/nginx.conf
-
-# Fix port - targets all listen 80 variants
-sed -i 's/listen 80;/listen 8080;/g' /etc/nginx/sites-enabled/default
-sed -i 's/listen \[::\]:80;/listen [::]:8080;/g' /etc/nginx/sites-enabled/default
-
-# Ensure nginx user owns required directories
-mkdir -p /var/log/nginx /var/lib/nginx
-chown -R nginx:nginx /var/log/nginx
-chown -R nginx:nginx /var/lib/nginx
-
-# Stop existing nginx gracefully, then start fresh
-nginx -s stop 2>/dev/null || pkill nginx 2>/dev/null || true
-sleep 1
-nginx -t && nginx
+# nginx must be running as nginx user
+# nginx must be listening on all active IPs on port 8080
+pkill -f apache2
+chmod 644 /etc/nginx/nginx.conf
+sed -i 's/80/8080 default_server/g' /etc/nginx/sites-available/default
+sed -i '1 i user nginx;' /etc/nginx/nginx.conf
+sudo -u nginx service nginx restart
